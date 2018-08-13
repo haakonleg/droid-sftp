@@ -24,6 +24,8 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     private val contentResolver = ctx.contentResolver
     private val filesystems = hashMapOf<Path, SftpFilesystem>()
 
+    private val contentResolverUriCache = hashMapOf<Path, Uri>()
+
     fun newFileSystem(path: String): FileSystem {
         return newFileSystem(URI(path), emptyMap<String, Any>())
     }
@@ -80,7 +82,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
             val file = resolveContentResolverUri(cr, path)
-            return contentResolver.openInputStream(file.uri)
+            return contentResolver.openInputStream(file)
         }
 
         val r = realPath(path)
@@ -94,8 +96,8 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         // If using contentresolver
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
-            val source = resolveContentResolverUri(cr, path).uri
-            val sourceParent = resolveContentResolverUri(cr, path.parent).uri
+            val source = resolveContentResolverUri(cr, path)
+            val sourceParent = resolveContentResolverUri(cr, path.parent)
             DocumentsContract.copyDocument(contentResolver, source, sourceParent)
             return
         }
@@ -121,10 +123,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun newAsynchronousFileChannel(path: Path, options: MutableSet<out OpenOption>?, executor: ExecutorService, vararg attrs: FileAttribute<*>): AsynchronousFileChannel {
-        Log.e(this::class.simpleName, "newAsynchronousFileChannel ${path}")
-        val r = realPath(path)
-        val p = r.fileSystem.provider()
-        return p.newAsynchronousFileChannel(path, options, executor, *attrs)
+        throw UnsupportedOperationException("newAsynchronousFileChannel")
     }
 
     override fun getScheme(): String {
@@ -183,10 +182,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun newByteChannel(path: Path, options: MutableSet<out OpenOption>, vararg attrs: FileAttribute<*>): SeekableByteChannel {
-        Log.e(this::class.simpleName, "newByteChannel ${path}")
-        val r = realPath(path)
-        val p = r.fileSystem.provider()
-        return p.newByteChannel(r, options, *attrs)
+        throw UnsupportedOperationException("newByteChannel")
     }
 
     override fun delete(path: Path) {
@@ -195,7 +191,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         // If using contentresolver
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
-            val file = resolveContentResolverUri(cr, path).uri
+            val file = resolveContentResolverUri(cr, path)
             DocumentsContract.deleteDocument(contentResolver, file)
             return
         }
@@ -218,10 +214,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun deleteIfExists(path: Path): Boolean {
-        val r = realPath(path)
-        val p = r.fileSystem.provider()
-        Log.e(this::class.simpleName, "deleteIfExists ${path} ${r}")
-        return p.deleteIfExists(r)
+        throw UnsupportedOperationException("deleteIfExists")
     }
 
     override fun createLink(link: Path?, existing: Path?) {
@@ -235,7 +228,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
             val file = resolveContentResolverUri(cr, path)
-            return contentResolver.openOutputStream(file.uri)
+            return contentResolver.openOutputStream(file)
         }
 
         val r = realPath(path)
@@ -308,10 +301,10 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
 
             // If file must be created first
             if (options.contains(StandardOpenOption.CREATE) || options.contains(StandardOpenOption.CREATE_NEW)) {
-                val root = resolveContentResolverUri(cr, path.parent).uri
+                val root = resolveContentResolverUri(cr, path.parent)
                 file = DocumentsContract.createDocument(contentResolver, root, null, path.fileName.toString())
             } else {
-                file = resolveContentResolverUri(cr, path).uri
+                file = resolveContentResolverUri(cr, path)
             }
 
             // Open for write
@@ -357,9 +350,9 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         // If using contentresolver
         val cr = (source as SftpPath).getContentResolverUri()
         if (cr != null) {
-            val sourceUri = resolveContentResolverUri(cr, source).uri
-            val sourceParentUri = resolveContentResolverUri(cr, source.parent).uri
-            val targetParentUri = resolveContentResolverUri(cr, target.parent).uri
+            val sourceUri = resolveContentResolverUri(cr, source)
+            val sourceParentUri = resolveContentResolverUri(cr, source.parent)
+            val targetParentUri = resolveContentResolverUri(cr, target.parent)
             if (sourceParentUri != targetParentUri) {
                 DocumentsContract.moveDocument(contentResolver, sourceUri, sourceParentUri, targetParentUri)
             } else {
@@ -381,7 +374,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
             val root = resolveContentResolverUri(cr, path.parent)
-            root.createDirectory(path.fileName.toString())
+            DocumentsContract.createDocument(contentResolver, root, DocumentsContract.Document.MIME_TYPE_DIR, path.fileName.toString())
             return
         }
 
@@ -390,12 +383,20 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         p.createDirectory(r, *attrs)
     }
 
-    private fun resolveContentResolverUri(root: Uri, path: Path): DocumentFile {
+    private fun resolveContentResolverUri(root: Uri, path: Path): Uri {
+        val fromCache = contentResolverUriCache[path]
+        if (fromCache != null) {
+            return fromCache
+        }
+
         var resolved: DocumentFile = DocumentFile.fromTreeUri(ctx, root)
         for(i in 0 until path.nameCount) {
             resolved = resolved.findFile(path.getName(i).toString())
         }
-        return resolved
+
+        val resolvedUri = resolved.uri
+        contentResolverUriCache.put(path, resolvedUri)
+        return resolvedUri
     }
 
     private fun realPath(path: Path): Path {
