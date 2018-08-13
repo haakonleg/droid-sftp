@@ -306,6 +306,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
             val file: Uri?
             var channel: FileChannel? = null
 
+            // If file must be created first
             if (options.contains(StandardOpenOption.CREATE) || options.contains(StandardOpenOption.CREATE_NEW)) {
                 val root = resolveContentResolverUri(cr, path.parent).uri
                 file = DocumentsContract.createDocument(contentResolver, root, null, path.fileName.toString())
@@ -313,16 +314,17 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
                 file = resolveContentResolverUri(cr, path).uri
             }
 
-            if (options.contains(StandardOpenOption.READ) && options.contains(StandardOpenOption.WRITE)) {
-                // TODO: Handle where it is both read and write
-            } else if (options.contains(StandardOpenOption.WRITE)) {
-                val fd = contentResolver.openFileDescriptor(file, "w")
+            // Open for write
+            if (options.contains(StandardOpenOption.WRITE)) {
+                val fd = if (options.contains(StandardOpenOption.APPEND))
+                    contentResolver.openFileDescriptor(file, "wa") else contentResolver.openFileDescriptor(file, "w")
 
                 channel = FileOutputStream(fd.fileDescriptor).channel
 
                 if (options.contains(StandardOpenOption.TRUNCATE_EXISTING))
-                    channel.truncate(1)
+                    channel.truncate(0)
 
+            // Open for read
             } else if (options.contains(StandardOpenOption.READ)) {
                 val fd = contentResolver.openFileDescriptor(file, "r")
                 channel = FileInputStream(fd.fileDescriptor).channel
