@@ -9,13 +9,14 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.util.Log
+import hakkon.sshdrive.filesystem.SftpFilesystemProvider
 import org.apache.sshd.common.file.FileSystemFactory
-import org.apache.sshd.common.file.root.RootedFileSystemProvider
 import org.apache.sshd.server.SshServer
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory
 import java.io.File
+import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Paths
 
@@ -52,11 +53,13 @@ class SFTPService : Service() {
     private lateinit var server: SshServer
     private lateinit var notification: Notification
     private lateinit var mBinder: SFTPBinder
+    private lateinit var fsProvider: SftpFilesystemProvider
 
     override fun onCreate() {
         server = initSFTPServer()
         notification = createNotification()
         mBinder = SFTPBinder()
+        fsProvider = SftpFilesystemProvider(this)
     }
 
     override fun onDestroy() {
@@ -112,13 +115,14 @@ class SFTPService : Service() {
         stopSelf()
     }
 
+
     private fun initSFTPServer(): SshServer {
         val APPDIR = filesDir
         System.setProperty("user.home", APPDIR.absolutePath)
 
         val sftpServer = SshServer.setUpDefaultServer()
         sftpServer.port = 2222
-        sftpServer.keyPairProvider = SimpleGeneratorHostKeyProvider(File(APPDIR, "hostkey.ser"))
+        sftpServer.keyPairProvider = SimpleGeneratorHostKeyProvider(File(APPDIR, "hostkey"))
 
         // Password authentication
         // TODO: Password
@@ -130,7 +134,8 @@ class SFTPService : Service() {
         sftpServer.fileSystemFactory = FileSystemFactory { session ->
             val path = PathsManager.get(this).getPath(session.username)
             if (path != null && path.enabled)
-                RootedFileSystemProvider().newFileSystem(Paths.get(path.path), emptyMap<String, Any>())
+                //RootedFileSystemProvider().newFileSystem(Paths.get(path.path), emptyMap<String, Any>())
+                fsProvider.newFileSystem(path.path)
             else
                 FileSystems.getDefault()
         }

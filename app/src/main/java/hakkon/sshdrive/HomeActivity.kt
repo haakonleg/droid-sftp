@@ -1,7 +1,9 @@
 package hakkon.sshdrive
 
 import android.Manifest
+import android.app.Activity
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -10,8 +12,13 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.content.ContextCompat
+import android.support.v4.provider.DocumentFile
 import android.support.v7.app.AppCompatActivity
+import android.system.Os
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_home.*
+import java.io.File
+import java.nio.file.Paths
 
 class HomeActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +86,22 @@ class HomeActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
                     DialogInterface.BUTTON_NEGATIVE -> finish()
                 }
             })
+        } else {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+            intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
+            startActivityForResult(intent, 1)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+
+        val treeUri = data.data
+        Log.e("treeUri", data.data.toString())
+        applicationContext.grantUriPermission(packageName, treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        applicationContext.contentResolver.takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
 }
