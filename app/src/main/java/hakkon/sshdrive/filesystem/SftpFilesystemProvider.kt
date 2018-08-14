@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.support.v4.provider.DocumentFile
-import android.system.Os
 import android.util.Log
+import hakkon.sshdrive.Util
 import java.io.*
 import java.net.URI
 import java.nio.channels.AsynchronousFileChannel
@@ -33,7 +33,16 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     override fun newFileSystem(uri: URI, env: Map<String, *>): FileSystem {
         val path = ensureDirectory(Paths.get(uri.toString()).toAbsolutePath())
 
-        val contentResolverUri = getContentResolverUri(path)
+        // Check if this is SD card path
+        var contentResolverUri: Uri? = null
+        val prefs = Util.getPrefs(ctx)
+        val pathUUID = Util.getPathUUID(ctx, uri.toString())
+        val sdCardUUID = prefs.getString("grantedUUID", null)
+
+        if (pathUUID == sdCardUUID) {
+            contentResolverUri = Uri.parse(prefs.getString("sdCardURI", null))
+            Log.e("Got SD Card URI", contentResolverUri.toString())
+        }
 
         return synchronized(filesystems) {
             if (filesystems.containsKey(path)) {
@@ -45,28 +54,6 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
             Log.e(this::class.simpleName, "Created filesystem $path")
             fs
         }
-    }
-
-    private fun getContentResolverUri(path: Path): Uri? {
-        for (permission in contentResolver.persistedUriPermissions) {
-            val df = DocumentFile.fromTreeUri(ctx, permission.uri)
-
-            // Create temp file and open its filedescriptor to resolve the real path of the file
-            val tempFile = df.createFile("text/plain", "tmpfile")
-            val fd = contentResolver.openFileDescriptor(tempFile.uri, "r")
-            val readLink = Os.readlink("/proc/self/fd/${fd.fd}")
-            tempFile.delete()
-
-            val real = Paths.get(readLink).toAbsolutePath().parent
-
-            if (path == real) {
-                Log.e(this::class.simpleName, "Found content resolver URI: ${permission.uri}")
-                return permission.uri
-            }
-        }
-
-        Log.e(this::class.simpleName, "No content resolver URI for $path")
-        return null
     }
 
     override fun checkAccess(path: Path, vararg modes: AccessMode) {

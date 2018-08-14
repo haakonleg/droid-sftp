@@ -6,12 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.view_path.view.*
 
-class PathsRecyclerAdapter(private val paths: List<Path>) : RecyclerView.Adapter<PathsRecyclerAdapter.ViewHolder>() {
+class PathsRecyclerAdapter() : RecyclerView.Adapter<PathsRecyclerAdapter.ViewHolder>() {
+
+    private var paths = emptyList<Path>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.view_path, parent, false)
         return ViewHolder(view)
+    }
+
+    fun setContent(paths: List<Path>) {
+        this.paths = paths
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

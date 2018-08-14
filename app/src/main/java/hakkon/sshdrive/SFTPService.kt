@@ -134,7 +134,6 @@ class SFTPService : Service() {
         sftpServer.fileSystemFactory = FileSystemFactory { session ->
             val path = PathsManager.get(this).getPath(session.username)
             if (path != null && path.enabled)
-                //RootedFileSystemProvider().newFileSystem(Paths.get(path.path), emptyMap<String, Any>())
                 fsProvider.newFileSystem(path.path)
             else
                 FileSystems.getDefault()

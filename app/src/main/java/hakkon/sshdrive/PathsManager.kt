@@ -23,12 +23,6 @@ class PathsManager private constructor() {
         fun get(context: Context): PathsManager {
             if (!instance.isInitialized) {
                 instance.readStoredPaths(context.applicationContext)
-
-                // Find internal and sd card dir on first launch of app
-                if (Util.firstLaunch(context)) {
-                    instance.findExternalPaths(context.applicationContext)
-                }
-
                 instance.isInitialized = true
             }
             return instance
@@ -53,8 +47,8 @@ class PathsManager private constructor() {
         }
     }
 
-    // Finds internal storage and SD card directories
-    private fun findExternalPaths(context: Context) {
+    // Finds internal storage and SD card directories and adds them
+    fun addExternalPaths(context: Context) {
         val dirs = context.getExternalFilesDirs(null)
 
         // Get the root dirs instead of app dir
@@ -63,18 +57,12 @@ class PathsManager private constructor() {
             dirs[i] = File(dirs[i].absolutePath.substring(0, index))
 
             // Internal storage
-            if (i == 0 && dirs.isNotEmpty() && Environment.getExternalStorageState(dirs[0]) == Environment.MEDIA_MOUNTED) {
-                Log.e("Internal Storage found", dirs[0].absolutePath)
-
+            if (i == 0 && dirs.isNotEmpty() && Environment.getExternalStorageState(dirs[0]) == Environment.MEDIA_MOUNTED)
                 paths.add(Path(USER_INTERNAL, "Internal Storage", dirs[0].absolutePath))
-            }
 
             // SD Card
-            if (i == 1 && dirs.size > 1 && Environment.getExternalStorageState(dirs[1]) == Environment.MEDIA_MOUNTED) {
-                Log.e("SD Card found", dirs[1].absolutePath)
-
+            if (i == 1 && dirs.size > 1 && Environment.getExternalStorageState(dirs[1]) == Environment.MEDIA_MOUNTED)
                 paths.add(Path(USER_SDCARD, "SD Card", dirs[1].absolutePath))
-            }
         }
     }
 
