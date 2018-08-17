@@ -7,4 +7,9 @@
     <string name="permissions_sd_title">SD Card Write Permissions</string>
     <string name="add_external_paths">Add external paths?</string>
     <string name="add_external_paths_desc">Do you want to automatically add internal storage and SD card to your configured paths?</string>
+    <string-array name="spinner_authentication">
+        <item>Password</item>
+        <item>Public Key</item>
+        <item>None</item>
+    </string-array>
 </resources>

@@ -88,10 +88,6 @@ class StatusFragment : Fragment(), ServiceConnection {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             val view = layoutPermissions.findViewById<View>(extPermissionId)
             layoutPermissions.removeView(view)
-
-            // Add internal and sd card to paths
-            PathsManager.get(ctx).addExternalPaths(ctx)
-
             return
         }
         Util.showAlertDialog(ctx, "You did not grant permission")

@@ -4,14 +4,11 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
-import android.net.Uri
+import android.os.Environment
 import android.os.storage.StorageManager
 import android.os.storage.StorageVolume
-import android.util.Log
 import java.io.File
-import java.lang.Exception
 import java.net.NetworkInterface
-import java.net.URI
 
 object Util {
     fun getPrefs(context: Context): SharedPreferences {
@@ -62,5 +59,23 @@ object Util {
         val sm = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
         val volume= sm.getStorageVolume(File(path))
         return if (volume.uuid != null) volume.uuid else ""
+    }
+
+    fun getInternalStoragePath(context: Context): String? {
+        val dirs = context.getExternalFilesDirs(null)
+        if (dirs.size > 0 && Environment.getExternalStorageState(dirs[0]) == Environment.MEDIA_MOUNTED) {
+            val i = dirs[0].absolutePath.indexOf("/Android/data")
+            return dirs[0].absolutePath.substring(0, i)
+        }
+        return null
+    }
+
+    fun getSDCardPath(context: Context): String? {
+        val dirs = context.getExternalFilesDirs(null)
+        if (dirs.size > 1 && Environment.getExternalStorageState(dirs[1]) == Environment.MEDIA_MOUNTED) {
+            val i = dirs[1].absolutePath.indexOf("/Android/data")
+            return dirs[1].absolutePath.substring(0, i)
+        }
+        return null
     }
 }

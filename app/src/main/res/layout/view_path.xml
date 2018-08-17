@@ -39,9 +39,9 @@
             android:id="@+id/txtUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtName"
-            android:layout_toEndOf="@id/labelAuth"
-            android:layout_marginStart="10dp"
+            android:layout_alignBaseline="@id/labelUsername"
+            android:layout_toEndOf="@id/labelUsername"
+            android:layout_marginStart="40dp"
             android:text="admin" />
 
         <TextView
@@ -55,9 +55,8 @@
             android:id="@+id/txtAuth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/txtUsername"
-            android:layout_toEndOf="@id/labelAuth"
-            android:layout_marginStart="10dp"
+            android:layout_alignBaseline="@id/labelAuth"
+            android:layout_alignStart="@id/txtUsername"
             android:text="Password" />
 
         <TextView
@@ -71,10 +70,9 @@
             android:id="@+id/txtPath"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/labelAuth"
+            android:layout_alignBaseline="@id/labelPath"
+            android:layout_alignStart="@id/txtUsername"
             android:layout_toStartOf="@id/btnEdit"
-            android:layout_toEndOf="@id/labelAuth"
-            android:layout_marginStart="10dp"
             android:text="/storage/emulated/0" />
 
         <ImageButton
@@ -84,8 +82,8 @@
             card_view:srcCompat="@drawable/ic_edit_24dp"
             android:background="?android:selectableItemBackground"
             android:scaleType="fitCenter"
-            android:layout_below="@id/labelAuth"
-            android:layout_alignParentEnd="true"/>
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@id/txtPath" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
