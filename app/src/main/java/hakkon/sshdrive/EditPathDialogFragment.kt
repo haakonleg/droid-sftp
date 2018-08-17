@@ -7,7 +7,9 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
 
 typealias OnEditFinished = (path: StoredPath) -> Unit
@@ -31,6 +33,7 @@ class EditPathDialogFragment : DialogFragment() {
     private lateinit var path: StoredPath
     private var isNew = false
     private lateinit var ctx: Context
+    private var selectedAuthType = AuthType.PASSWORD
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +43,7 @@ class EditPathDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val layout = LayoutInflater.from(activity).inflate(R.layout.dialogfragment_edit_path, null)
+        val layout = LayoutInflater.from(ctx).inflate(R.layout.dialogfragment_edit_path, null)
         initLayout(layout)
 
         val builder = AlertDialog.Builder(activity)
@@ -57,11 +60,37 @@ class EditPathDialogFragment : DialogFragment() {
         layout.inputUsername.editText!!.setText(path.username)
         layout.txtPath.text = path.path
 
-        // Dropdown
+        // Authentication spinner adapter
         val adapter = ArrayAdapter.createFromResource(
                 ctx, R.array.spinner_authentication, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         layout.spinnerAuth.adapter = adapter
+
+        when (path.authType) {
+            AuthType.PASSWORD -> {
+                layout.layoutAuth.inputPassword.editText!!.setText(path.password)
+                layout.spinnerAuth.setSelection(0)
+            }
+            AuthType.PUBLICKEY -> {
+                layout.spinnerAuth.setSelection(1)
+            }
+            AuthType.NONE -> {
+                layout.spinnerAuth.setSelection(2)
+            }
+        }
+
+        // Authentication spinner listener
+        layout.spinnerAuth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
+                when (position) {
+                    0 -> passwordAuthSelected(layout.layoutAuth)
+                    1 -> keyAuthSelected(layout.layoutAuth)
+                    2 -> noAuthSelected(layout.layoutAuth)
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
+        }
 
         // Set buttons onclick
         // TODO: Browse
@@ -77,11 +106,29 @@ class EditPathDialogFragment : DialogFragment() {
         }
     }
 
+    private fun passwordAuthSelected(layoutAuth: FrameLayout) {
+        layoutAuth.inputPassword.visibility = View.VISIBLE
+        selectedAuthType = AuthType.PASSWORD
+    }
+
+    private fun keyAuthSelected(layoutAuth: FrameLayout) {
+        layoutAuth.inputPassword.visibility = View.GONE
+        selectedAuthType = AuthType.PUBLICKEY
+    }
+
+    private fun noAuthSelected(layoutAuth: FrameLayout) {
+        layoutAuth.inputPassword.visibility = View.GONE
+        selectedAuthType = AuthType.NONE
+    }
+
     private fun finishedEdit(layout: View) {
-        val newPath = StoredPath()
-        newPath.username = layout.inputUsername.editText!!.text.toString()
-        newPath.name = layout.inputLabel.editText!!.text.toString()
-        newPath.path = layout.txtPath.text.toString()
-        listener(newPath)
+        val username = layout.inputUsername.editText!!.text.toString()
+        val name = layout.inputLabel.editText!!.text.toString()
+        val path = layout.txtPath.text.toString()
+
+        val password = if (selectedAuthType == AuthType.PASSWORD)
+            layout.layoutAuth.inputPassword.editText!!.text.toString() else ""
+
+        listener(StoredPath(username, name, path, selectedAuthType, password))
     }
 }

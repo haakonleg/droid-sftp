@@ -3,7 +3,6 @@ package hakkon.sshdrive
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,28 +19,28 @@ class PathsFragment : Fragment(), PathsRecyclerAdapter.OnPathEditListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_paths, container, false)
-        adapter = PathsRecyclerAdapter(this)
+        adapter = PathsRecyclerAdapter(this, PathsManager.get(ctx).getPaths().toMutableList())
         view.pathsRecycler.adapter = adapter
         view.btnAdd.setOnClickListener { newPath() }
         return view
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        if (isVisibleToUser)
-            adapter.setContent(PathsManager.get(ctx).getPaths())
-    }
-
     override fun onPathEdit(path: StoredPath) {
         val editFragment = EditPathDialogFragment.newInstance(path, false) {newPath ->
-            Log.e("NewPath", newPath.name)
+            PathsManager.get(ctx).pathUpdated(path, newPath, ctx)
+            adapter.itemUpdated(path, newPath)
         }
         editFragment.show(fragmentManager, "dialog")
     }
 
+    override fun onPathEnabled(path: StoredPath, enabled: Boolean) {
+        PathsManager.get(ctx).setEnabled(path, enabled, ctx)
+    }
+
     private fun newPath() {
         val editFragment = EditPathDialogFragment.newInstance(StoredPath(), true) {newPath ->
-
+            PathsManager.get(ctx).addPath(newPath, ctx)
+            adapter.addItem(newPath)
         }
         editFragment.show(fragmentManager, "dialog")
     }

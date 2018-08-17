@@ -1,25 +1,30 @@
 package hakkon.sshdrive
 
 import android.content.Context
-import android.os.Environment
 import android.os.Parcelable
-import com.google.gson.Gson
+import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.parcel.Parcelize
-import java.io.File
+
+enum class AuthType(val type: Int) {
+    PASSWORD(0),
+    PUBLICKEY(1),
+    NONE(2)
+}
 
 @Parcelize
 data class StoredPath(
-        var username: String = "",
-        var name: String = "",
-        var path: String = "",
+        val username: String = "",
+        val name: String = "",
+        val path: String = "",
+        val authType: AuthType = AuthType.NONE,
+        val password: String = "",
+        val privateKey: String = "",
+        val publicKey: String = "",
         var enabled: Boolean = true) : Parcelable
 
 class PathsManager private constructor() {
     companion object {
-        val USER_INTERNAL = "INTERNAL"
-        val USER_SDCARD = "SDCARD"
-
         private val instance = PathsManager()
 
         fun get(context: Context): PathsManager {
@@ -36,6 +41,8 @@ class PathsManager private constructor() {
 
     // List of user/home dir
     private val paths = mutableListOf<StoredPath>()
+
+    // For GSON
     private val pathsType = object : TypeToken<List<StoredPath>>() {}.type
 
     // Reads stored paths from preferences
@@ -60,11 +67,28 @@ class PathsManager private constructor() {
         return paths
     }
 
-    fun getPath(u: String): StoredPath? {
-        for (path in paths) {
-            if (path.username == u)
-                return path
+    fun getPathByUsername(u: String): StoredPath? {
+        return paths.firstOrNull { it.username == u }
+    }
+
+    fun setEnabled(path: StoredPath, enabled: Boolean, context: Context) {
+        val i = paths.indexOf(path)
+        if (i != -1) {
+            paths[i].enabled = enabled
+            save(context)
         }
-        return null
+    }
+
+    fun pathUpdated(orig: StoredPath, newPath: StoredPath, context: Context) {
+        val i = paths.indexOf(orig)
+        if (i != -1) {
+            paths[i] = newPath
+            save(context)
+        }
+    }
+
+    fun addPath(path: StoredPath, context: Context) {
+        paths.add(path)
+        save(context)
     }
 }

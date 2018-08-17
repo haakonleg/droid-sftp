@@ -10,15 +10,23 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import hakkon.sshdrive.filesystem.SftpFilesystemProvider
+import org.apache.sshd.common.auth.UserAuthMethodFactory
 import org.apache.sshd.common.file.FileSystemFactory
+import org.apache.sshd.common.kex.KexProposalOption
+import org.apache.sshd.common.session.Session
+import org.apache.sshd.common.session.SessionListener
+import org.apache.sshd.common.util.buffer.Buffer
 import org.apache.sshd.server.SshServer
+import org.apache.sshd.server.auth.UserAuthNone
+import org.apache.sshd.server.auth.hostbased.UserAuthHostBased
+import org.apache.sshd.server.auth.keyboard.KeyboardInteractiveAuthenticator
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
+import org.apache.sshd.server.auth.password.UserAuthPassword
+import org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory
 import java.io.File
-import java.net.URI
 import java.nio.file.FileSystems
-import java.nio.file.Paths
 
 class SFTPService : Service() {
     enum class ACTIONS {
@@ -125,14 +133,29 @@ class SFTPService : Service() {
         sftpServer.keyPairProvider = SimpleGeneratorHostKeyProvider(File(APPDIR, "hostkey"))
 
         // Password authentication
-        // TODO: Password
         sftpServer.passwordAuthenticator = PasswordAuthenticator { username, password, session ->
-            PathsManager.get(this).getPath(username) != null
+            val path = PathsManager.get(this).getPathByUsername(username)
+            if (path != null && path.authType == AuthType.PASSWORD)
+                password == path.password
+            else
+                false
+        }
+
+        // Can be used for both public key and no authentication
+        sftpServer.publickeyAuthenticator = PublickeyAuthenticator { username, key, session ->
+            val path = PathsManager.get(this).getPathByUsername(username)
+            if (path != null && path.authType == AuthType.NONE) {
+                true
+            } else if(path != null && path.authType == AuthType.PUBLICKEY) {
+                true
+            } else {
+                false
+            }
         }
 
         // Set filesystem for each user
         sftpServer.fileSystemFactory = FileSystemFactory { session ->
-            val path = PathsManager.get(this).getPath(session.username)
+            val path = PathsManager.get(this).getPathByUsername(session.username)
             if (path != null && path.enabled)
                 fsProvider.newFileSystem(path.path)
             else
@@ -150,6 +173,15 @@ class SFTPService : Service() {
     inner class SFTPBinder : Binder() {
         fun getService() : SFTPService {
             return this@SFTPService
+        }
+    }
+
+    inner class MyUserAuthNone : UserAuthNone() {
+        override fun doAuth(buffer: Buffer?, init: Boolean): Boolean {
+            val path = PathsManager.get(this@SFTPService).getPathByUsername(username)
+            if (path != null && path.authType == AuthType.NONE)
+                return true
+            return false
         }
     }
 }

@@ -6,22 +6,29 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.view_path.view.*
 
-class PathsRecyclerAdapter(private val listener: OnPathEditListener) : RecyclerView.Adapter<PathsRecyclerAdapter.ViewHolder>() {
+class PathsRecyclerAdapter(private val listener: OnPathEditListener, private val paths: MutableList<StoredPath>) : RecyclerView.Adapter<PathsRecyclerAdapter.ViewHolder>() {
     interface OnPathEditListener {
         fun onPathEdit(path: StoredPath)
+        fun onPathEnabled(path: StoredPath, enabled: Boolean)
     }
 
-    private var paths = emptyList<StoredPath>()
+    fun addItem(path: StoredPath) {
+        paths.add(path)
+        notifyItemInserted(paths.size-1)
+    }
+
+    fun itemUpdated(orig: StoredPath, newPath: StoredPath) {
+        val i = paths.indexOf(orig)
+        if (i != -1 ){
+            paths[i] = newPath
+            notifyItemChanged(i)
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.view_path, parent, false)
         return ViewHolder(view)
-    }
-
-    fun setContent(paths: List<StoredPath>) {
-        this.paths = paths
-        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -37,14 +44,21 @@ class PathsRecyclerAdapter(private val listener: OnPathEditListener) : RecyclerV
             itemView.txtName.text = path.name
             itemView.switchEnable.isChecked = path.enabled
             itemView.txtUsername.text = path.username
-
-            // TODO: Change
-            itemView.txtAuth.text = "Password"
-
+            itemView.txtAuth.text = when(path.authType) {
+                AuthType.PASSWORD -> "Password"
+                AuthType.PUBLICKEY -> "Public Key"
+                AuthType.NONE -> "None"
+            }
             itemView.txtPath.text = path.path
 
+            // Enabled switch listener
+            itemView.switchEnable.setOnCheckedChangeListener { _, isChecked ->
+                listener.onPathEnabled(paths[adapterPosition], isChecked)
+            }
             // OnClick lister for edit path
-            itemView.btnEdit.setOnClickListener { listener.onPathEdit(paths[adapterPosition]) }
+            itemView.btnEdit.setOnClickListener {
+                listener.onPathEdit(paths[adapterPosition])
+            }
         }
     }
 }
