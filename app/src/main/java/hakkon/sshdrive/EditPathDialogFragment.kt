@@ -3,13 +3,14 @@ package hakkon.sshdrive
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.FrameLayout
+import hakkon.sshdrive.directorypicker.DirectoryPickerActivity
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
 
 typealias OnEditFinished = (path: StoredPath) -> Unit
@@ -34,6 +35,7 @@ class EditPathDialogFragment : DialogFragment() {
     private var isNew = false
     private lateinit var ctx: Context
     private var selectedAuthType = AuthType.PASSWORD
+    private lateinit var layout: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,19 +45,19 @@ class EditPathDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val layout = LayoutInflater.from(ctx).inflate(R.layout.dialogfragment_edit_path, null)
-        initLayout(layout)
+        layout = LayoutInflater.from(ctx).inflate(R.layout.dialogfragment_edit_path, null)
+        initLayout()
 
         val builder = AlertDialog.Builder(activity)
                 .setTitle(if (isNew) "New Path" else "Editing ${path.name}")
                 .setNegativeButton("Cancel", null)
-                .setPositiveButton("Apply") {_, _ ->  finishedEdit(layout)}
+                .setPositiveButton("Apply") {_, _ ->  finishedEdit()}
                 .setView(layout)
 
         return builder.create()
     }
 
-    private fun initLayout(layout: View) {
+    private fun initLayout() {
         layout.inputLabel.editText!!.setText(path.name)
         layout.inputUsername.editText!!.setText(path.username)
         layout.txtPath.text = path.path
@@ -83,9 +85,9 @@ class EditPathDialogFragment : DialogFragment() {
         layout.spinnerAuth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
                 when (position) {
-                    0 -> passwordAuthSelected(layout.layoutAuth)
-                    1 -> keyAuthSelected(layout.layoutAuth)
-                    2 -> noAuthSelected(layout.layoutAuth)
+                    0 -> passwordAuthSelected()
+                    1 -> keyAuthSelected()
+                    2 -> noAuthSelected()
                 }
             }
 
@@ -93,8 +95,10 @@ class EditPathDialogFragment : DialogFragment() {
         }
 
         // Set buttons onclick
-        // TODO: Browse
-        layout.btnBrowse.setOnClickListener {  }
+        layout.btnBrowse.setOnClickListener {
+            val intent = Intent(ctx, DirectoryPickerActivity::class.java)
+            startActivityForResult(intent, DirectoryPickerActivity.REQUEST_DIR)
+        }
 
         if (Util.getInternalStoragePath(ctx) != null) {
             layout.btnInternalStorage.visibility = View.VISIBLE
@@ -106,22 +110,29 @@ class EditPathDialogFragment : DialogFragment() {
         }
     }
 
-    private fun passwordAuthSelected(layoutAuth: FrameLayout) {
-        layoutAuth.inputPassword.visibility = View.VISIBLE
+    // For directory picker
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == DirectoryPickerActivity.RESULT_CODE_SELECTED) {
+            layout.txtPath.text = data?.getStringExtra(DirectoryPickerActivity.RESULT_DIR)
+        }
+    }
+
+    private fun passwordAuthSelected() {
+        layout.layoutAuth.inputPassword.visibility = View.VISIBLE
         selectedAuthType = AuthType.PASSWORD
     }
 
-    private fun keyAuthSelected(layoutAuth: FrameLayout) {
-        layoutAuth.inputPassword.visibility = View.GONE
+    private fun keyAuthSelected() {
+        layout.layoutAuth.inputPassword.visibility = View.GONE
         selectedAuthType = AuthType.PUBLICKEY
     }
 
-    private fun noAuthSelected(layoutAuth: FrameLayout) {
-        layoutAuth.inputPassword.visibility = View.GONE
+    private fun noAuthSelected() {
+        layout.layoutAuth.inputPassword.visibility = View.GONE
         selectedAuthType = AuthType.NONE
     }
 
-    private fun finishedEdit(layout: View) {
+    private fun finishedEdit() {
         val username = layout.inputUsername.editText!!.text.toString()
         val name = layout.inputLabel.editText!!.text.toString()
         val path = layout.txtPath.text.toString()

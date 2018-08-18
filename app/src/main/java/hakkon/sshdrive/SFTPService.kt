@@ -175,13 +175,4 @@ class SFTPService : Service() {
             return this@SFTPService
         }
     }
-
-    inner class MyUserAuthNone : UserAuthNone() {
-        override fun doAuth(buffer: Buffer?, init: Boolean): Boolean {
-            val path = PathsManager.get(this@SFTPService).getPathByUsername(username)
-            if (path != null && path.authType == AuthType.NONE)
-                return true
-            return false
-        }
-    }
 }
