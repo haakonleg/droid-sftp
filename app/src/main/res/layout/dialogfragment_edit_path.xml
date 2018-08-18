@@ -45,7 +45,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_below="@id/labelUsername"/>
+        android:layout_below="@id/labelUsername"
+        android:entries="@array/spinner_authentication"/>
 
     <FrameLayout
         android:id="@+id/layoutAuth"
@@ -67,6 +68,62 @@
                 android:inputType="textPassword"
                 android:maxLength="30" />
         </android.support.design.widget.TextInputLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutPublicKey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/labelAlg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="Algorithm"/>
+
+            <Spinner
+                android:id="@+id/spinnerAlg"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@id/labelAlg"
+                android:layout_toStartOf="@id/btnGenerate"
+                android:entries="@array/spinner_key_alg" />
+
+            <Button
+                android:id="@+id/btnGenerate"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_toStartOf="@id/btnImport"
+                android:layout_alignBottom="@id/spinnerAlg"
+                android:textSize="12sp"
+                android:text="Generate" />
+
+            <Button
+                android:id="@+id/btnImport"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@id/spinnerAlg"
+                android:textSize="12sp"
+                android:text="Import" />
+
+            <TextView
+                android:id="@+id/labelKeyStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/spinnerAlg"
+                android:textSize="12sp"
+                android:text="Status" />
+
+            <TextView
+                android:id="@+id/txtKeyStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/labelKeyStatus"
+                android:text="No key loaded"
+                android:textColor="@color/red"/>
+
+        </RelativeLayout>
 
     </FrameLayout>
 

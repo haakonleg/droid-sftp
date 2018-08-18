@@ -9,9 +9,9 @@ import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import hakkon.sshdrive.directorypicker.DirectoryPickerActivity
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
+import java.security.KeyPairGenerator
 
 typealias OnEditFinished = (path: StoredPath) -> Unit
 
@@ -61,12 +61,6 @@ class EditPathDialogFragment : DialogFragment() {
         layout.inputLabel.editText!!.setText(path.name)
         layout.inputUsername.editText!!.setText(path.username)
         layout.txtPath.text = path.path
-
-        // Authentication spinner adapter
-        val adapter = ArrayAdapter.createFromResource(
-                ctx, R.array.spinner_authentication, android.R.layout.simple_spinner_item)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        layout.spinnerAuth.adapter = adapter
 
         when (path.authType) {
             AuthType.PASSWORD -> {
@@ -124,7 +118,10 @@ class EditPathDialogFragment : DialogFragment() {
 
     private fun keyAuthSelected() {
         layout.layoutAuth.inputPassword.visibility = View.GONE
+        layout.layoutAuth.layoutPublicKey.visibility = View.VISIBLE
         selectedAuthType = AuthType.PUBLICKEY
+
+        val keyLayout = layout.layoutAuth.layoutPublicKey
     }
 
     private fun noAuthSelected() {

@@ -2,6 +2,7 @@ package hakkon.sshdrive.filesystem
 
 import android.content.Context
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.support.v4.provider.DocumentFile
 import android.util.Log
@@ -23,6 +24,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     private val ctx = context.applicationContext
     private val contentResolver = ctx.contentResolver
     private val filesystems = hashMapOf<Path, SftpFilesystem>()
+    private val autoCloseFd = AutoCloseFd()
 
     private val contentResolverUriCache = hashMapOf<Path, Uri>()
 
@@ -279,19 +281,17 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
 
     override fun newFileChannel(path: Path, options: MutableSet<out OpenOption>, vararg attrs: FileAttribute<*>): FileChannel {
         Log.e(this::class.simpleName, "newFileChannel ${path} ${options.toList()}")
-
         // If using contentresolver
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
-            val file: Uri?
             var channel: FileChannel? = null
 
-            // If file must be created first
-            if (options.contains(StandardOpenOption.CREATE) || options.contains(StandardOpenOption.CREATE_NEW)) {
+            // Check if file must be created first
+            val file = if (options.contains(StandardOpenOption.CREATE) || options.contains(StandardOpenOption.CREATE_NEW)) {
                 val root = resolveContentResolverUri(cr, path.parent)
-                file = DocumentsContract.createDocument(contentResolver, root, null, path.fileName.toString())
+                DocumentsContract.createDocument(contentResolver, root, null, path.fileName.toString())
             } else {
-                file = resolveContentResolverUri(cr, path)
+                resolveContentResolverUri(cr, path)
             }
 
             // Open for write
@@ -299,15 +299,14 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
                 val fd = if (options.contains(StandardOpenOption.APPEND))
                     contentResolver.openFileDescriptor(file, "wa") else contentResolver.openFileDescriptor(file, "w")
 
-                channel = FileOutputStream(fd.fileDescriptor).channel
+                channel = autoCloseFd.autoCloseOut(fd)
 
-                if (options.contains(StandardOpenOption.TRUNCATE_EXISTING))
-                    channel.truncate(0)
+                if (options.contains(StandardOpenOption.TRUNCATE_EXISTING)) channel.truncate(0)
 
             // Open for read
             } else if (options.contains(StandardOpenOption.READ)) {
                 val fd = contentResolver.openFileDescriptor(file, "r")
-                channel = FileInputStream(fd.fileDescriptor).channel
+                channel = autoCloseFd.autoCloseIn(fd)
             }
 
             if (channel != null) return channel
@@ -316,6 +315,11 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         val r = realPath(path)
         val p = r.fileSystem.provider()
         return p.newFileChannel(r, options, *attrs)
+    }
+
+    private fun openFileDescriptors(): Int {
+        val dir = File("/proc/self/fd")
+        return dir.listFiles().size
     }
 
     override fun getFileStore(path: Path): FileStore {
@@ -404,5 +408,38 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
             throw UnsupportedOperationException("$path is not a directory")
         }
         return path
+    }
+
+    // This class is used to hold references to FileDescriptors and make sure they
+    // are closed once the stream is closed
+    class AutoCloseFd {
+        private val fdListOut = mutableListOf<AutoCloseFdOut>()
+        private val fdListIn = mutableListOf<AutoCloseFdIn>()
+
+        fun autoCloseOut(fd: ParcelFileDescriptor): FileChannel {
+            val obj = AutoCloseFdOut(fd)
+            fdListOut.add(obj)
+            return obj.channel
+        }
+
+        fun autoCloseIn(fd: ParcelFileDescriptor): FileChannel {
+            val obj = AutoCloseFdIn(fd)
+            fdListIn.add(obj)
+            return obj.channel
+        }
+
+        inner class AutoCloseFdOut(fd: ParcelFileDescriptor) : ParcelFileDescriptor.AutoCloseOutputStream(fd) {
+            override fun close() {
+                super.close()
+                fdListOut.remove(this)
+            }
+        }
+
+        inner class AutoCloseFdIn(fd: ParcelFileDescriptor) : ParcelFileDescriptor.AutoCloseInputStream(fd) {
+            override fun close() {
+                super.close()
+                fdListIn.remove(this)
+            }
+        }
     }
 }

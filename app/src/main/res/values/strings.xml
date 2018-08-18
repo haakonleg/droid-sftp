@@ -12,4 +12,8 @@
         <item>Public Key</item>
         <item>None</item>
     </string-array>
+    <string-array name="spinner_key_alg">
+        <item>rsa 2048</item>
+        <item>ecdsa 521</item>
+    </string-array>
 </resources>
