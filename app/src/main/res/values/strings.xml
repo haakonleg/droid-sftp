@@ -5,15 +5,4 @@
     <string name="permissions_external_title">External Storage Read/Write Permission</string>
     <string name="permissions_sd_desc">Select to grant permissions to write to SD card. This is needed if you want to be able to write to the SD card (you can still read without this).</string>
     <string name="permissions_sd_title">SD Card Write Permissions</string>
-    <string name="add_external_paths">Add external paths?</string>
-    <string name="add_external_paths_desc">Do you want to automatically add internal storage and SD card to your configured paths?</string>
-    <string-array name="spinner_authentication">
-        <item>Password</item>
-        <item>Public Key</item>
-        <item>None</item>
-    </string-array>
-    <string-array name="spinner_key_alg">
-        <item>rsa 2048</item>
-        <item>ecdsa 521</item>
-    </string-array>
 </resources>

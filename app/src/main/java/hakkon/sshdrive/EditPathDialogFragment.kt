@@ -8,10 +8,8 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.AdapterView
 import hakkon.sshdrive.directorypicker.DirectoryPickerActivity
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
-import java.security.KeyPairGenerator
 
 typealias OnEditFinished = (path: StoredPath) -> Unit
 
@@ -34,7 +32,6 @@ class EditPathDialogFragment : DialogFragment() {
     private lateinit var path: StoredPath
     private var isNew = false
     private lateinit var ctx: Context
-    private var selectedAuthType = AuthType.PASSWORD
     private lateinit var layout: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,32 +58,7 @@ class EditPathDialogFragment : DialogFragment() {
         layout.inputLabel.editText!!.setText(path.name)
         layout.inputUsername.editText!!.setText(path.username)
         layout.txtPath.text = path.path
-
-        when (path.authType) {
-            AuthType.PASSWORD -> {
-                layout.layoutAuth.inputPassword.editText!!.setText(path.password)
-                layout.spinnerAuth.setSelection(0)
-            }
-            AuthType.PUBLICKEY -> {
-                layout.spinnerAuth.setSelection(1)
-            }
-            AuthType.NONE -> {
-                layout.spinnerAuth.setSelection(2)
-            }
-        }
-
-        // Authentication spinner listener
-        layout.spinnerAuth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
-                when (position) {
-                    0 -> passwordAuthSelected()
-                    1 -> keyAuthSelected()
-                    2 -> noAuthSelected()
-                }
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {}
-        }
+        layout.inputPassword.editText!!.setText(path.password)
 
         // Set buttons onclick
         layout.btnBrowse.setOnClickListener {
@@ -104,39 +76,20 @@ class EditPathDialogFragment : DialogFragment() {
         }
     }
 
-    // For directory picker
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == DirectoryPickerActivity.RESULT_CODE_SELECTED) {
-            layout.txtPath.text = data?.getStringExtra(DirectoryPickerActivity.RESULT_DIR)
-        }
-    }
-
-    private fun passwordAuthSelected() {
-        layout.layoutAuth.inputPassword.visibility = View.VISIBLE
-        selectedAuthType = AuthType.PASSWORD
-    }
-
-    private fun keyAuthSelected() {
-        layout.layoutAuth.inputPassword.visibility = View.GONE
-        layout.layoutAuth.layoutPublicKey.visibility = View.VISIBLE
-        selectedAuthType = AuthType.PUBLICKEY
-
-        val keyLayout = layout.layoutAuth.layoutPublicKey
-    }
-
-    private fun noAuthSelected() {
-        layout.layoutAuth.inputPassword.visibility = View.GONE
-        selectedAuthType = AuthType.NONE
-    }
-
     private fun finishedEdit() {
         val username = layout.inputUsername.editText!!.text.toString()
         val name = layout.inputLabel.editText!!.text.toString()
         val path = layout.txtPath.text.toString()
 
-        val password = if (selectedAuthType == AuthType.PASSWORD)
-            layout.layoutAuth.inputPassword.editText!!.text.toString() else ""
+        val password = layout.inputPassword.editText!!.text.toString()
 
-        listener(StoredPath(username, name, path, selectedAuthType, password))
+        listener(StoredPath(username, name, path, password))
+    }
+
+    // For directory picker
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == DirectoryPickerActivity.RESULT_CODE_SELECTED) {
+            layout.txtPath.text = data?.getStringExtra(DirectoryPickerActivity.RESULT_DIR)
+        }
     }
 }

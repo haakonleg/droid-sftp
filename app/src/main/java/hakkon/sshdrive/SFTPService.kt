@@ -10,19 +10,9 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import hakkon.sshdrive.filesystem.SftpFilesystemProvider
-import org.apache.sshd.common.auth.UserAuthMethodFactory
 import org.apache.sshd.common.file.FileSystemFactory
-import org.apache.sshd.common.kex.KexProposalOption
-import org.apache.sshd.common.session.Session
-import org.apache.sshd.common.session.SessionListener
-import org.apache.sshd.common.util.buffer.Buffer
 import org.apache.sshd.server.SshServer
-import org.apache.sshd.server.auth.UserAuthNone
-import org.apache.sshd.server.auth.hostbased.UserAuthHostBased
-import org.apache.sshd.server.auth.keyboard.KeyboardInteractiveAuthenticator
 import org.apache.sshd.server.auth.password.PasswordAuthenticator
-import org.apache.sshd.server.auth.password.UserAuthPassword
-import org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory
 import java.io.File
@@ -135,22 +125,10 @@ class SFTPService : Service() {
         // Password authentication
         sftpServer.passwordAuthenticator = PasswordAuthenticator { username, password, session ->
             val path = PathsManager.get(this).getPathByUsername(username)
-            if (path != null && path.authType == AuthType.PASSWORD)
+            if (path != null)
                 password == path.password
             else
                 false
-        }
-
-        // Can be used for both public key and no authentication
-        sftpServer.publickeyAuthenticator = PublickeyAuthenticator { username, key, session ->
-            val path = PathsManager.get(this).getPathByUsername(username)
-            if (path != null && path.authType == AuthType.NONE) {
-                true
-            } else if(path != null && path.authType == AuthType.PUBLICKEY) {
-                true
-            } else {
-                false
-            }
         }
 
         // Set filesystem for each user

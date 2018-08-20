@@ -44,11 +44,7 @@ class PathsRecyclerAdapter(private val listener: OnPathEditListener, private val
             itemView.txtName.text = path.name
             itemView.switchEnable.isChecked = path.enabled
             itemView.txtUsername.text = path.username
-            itemView.txtAuth.text = when(path.authType) {
-                AuthType.PASSWORD -> "Password"
-                AuthType.PUBLICKEY -> "Public Key"
-                AuthType.NONE -> "None"
-            }
+            itemView.txtAuth.text = "Password"
             itemView.txtPath.text = path.path
 
             // Enabled switch listener

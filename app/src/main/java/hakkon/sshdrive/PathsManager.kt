@@ -6,21 +6,12 @@ import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.parcel.Parcelize
 
-enum class AuthType(val type: Int) {
-    PASSWORD(0),
-    PUBLICKEY(1),
-    NONE(2)
-}
-
 @Parcelize
 data class StoredPath(
         val username: String = "",
         val name: String = "",
         val path: String = "",
-        val authType: AuthType = AuthType.NONE,
         val password: String = "",
-        val privateKey: String = "",
-        val publicKey: String = "",
         var enabled: Boolean = true) : Parcelable
 
 class PathsManager private constructor() {
