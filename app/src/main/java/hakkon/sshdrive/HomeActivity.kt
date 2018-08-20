@@ -1,11 +1,13 @@
 package hakkon.sshdrive
 
+import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_home.*
 
 class HomeActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
@@ -13,6 +15,10 @@ class HomeActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+
+        // Load default preferences
+        PreferenceManager.setDefaultValues(this, getString(R.string.app_name),
+                Context.MODE_PRIVATE, R.xml.preferences, false)
 
         // Instantiate ViewPager and TabLayout
         fragmentPager.adapter = PagerAdapter(supportFragmentManager)
@@ -44,7 +50,7 @@ class HomeActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
             when (position) {
                 FRAGMENTS.STATUS_FRAGMENT.value -> return StatusFragment()
                 FRAGMENTS.PATHS_FRAGMENT.value -> return PathsFragment()
-                //FRAGMENTS.SETTINGS_FRAGMENT.value -> return SettingsFragment()
+                FRAGMENTS.SETTINGS_FRAGMENT.value -> return SettingsFragment()
                 else -> return StatusFragment()
             }
         }

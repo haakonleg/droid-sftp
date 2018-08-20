@@ -4,6 +4,7 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.SharedPreferences
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
@@ -52,8 +53,10 @@ class SFTPService : Service() {
     private lateinit var notification: Notification
     private lateinit var mBinder: SFTPBinder
     private lateinit var fsProvider: SftpFilesystemProvider
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreate() {
+        prefs = Util.getPrefs(this)
         server = initSFTPServer()
         notification = createNotification()
         mBinder = SFTPBinder()
@@ -119,7 +122,7 @@ class SFTPService : Service() {
         System.setProperty("user.home", APPDIR.absolutePath)
 
         val sftpServer = SshServer.setUpDefaultServer()
-        sftpServer.port = 2222
+        sftpServer.port = prefs.getString("server_port", getString(R.string.prefs_port_default)).toInt()
         sftpServer.keyPairProvider = SimpleGeneratorHostKeyProvider(File(APPDIR, "hostkey"))
 
         // Password authentication
@@ -146,6 +149,10 @@ class SFTPService : Service() {
         sftpServer.subsystemFactories = listOf(sftpFactory.build())
 
         return sftpServer
+    }
+
+    fun getPort(): Int {
+        return server.port
     }
 
     inner class SFTPBinder : Binder() {

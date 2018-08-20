@@ -136,10 +136,11 @@ class StatusFragment : Fragment(), ServiceConnection {
         txtServerStatus.text = "Server is running"
 
         // Set status text
+        val port = sftpService!!.getPort()
         val ip = Util.getLocalIPAddress()
         val sb = StringBuilder()
         sb
-                .append("Server listening on $ip port 2222\n")
+                .append("Server listening on $ip port $port\n")
                 .append("\n")
                 .append("PATHS\n")
                 .append("------------\n")

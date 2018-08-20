@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+<PreferenceCategory android:title="@string/prefs_category_server">
+    <EditTextPreference
+        android:key="server_port"
+        android:defaultValue="@string/prefs_port_default"
+        android:inputType="number"
+        android:title="@string/prefs_port_title"
+        android:summary="@string/prefs_port_summary" />
+    <CheckBoxPreference
+        android:key="server_start_on_boot"
+        android:defaultValue="false"
+        android:title="@string/prefs_autostart_title"
+        android:summary="@string/prefs_autostart_summary" />
+</PreferenceCategory>
+
+</PreferenceScreen>

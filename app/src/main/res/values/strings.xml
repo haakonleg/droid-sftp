@@ -5,4 +5,11 @@
     <string name="permissions_external_title">External Storage Read/Write Permission</string>
     <string name="permissions_sd_desc">Select to grant permissions to write to SD card. This is needed if you want to be able to write to the SD card (you can still read without this).</string>
     <string name="permissions_sd_title">SD Card Write Permissions</string>
+    <string name="prefs_category_server">Server</string>
+    <string name="prefs_port_title">Port</string>
+    <string name="prefs_port_summary">Select the server listening port. Android does not allow ports below 1024.</string>
+    <string name="prefs_autostart_title">Autostart</string>
+    <string name="prefs_autostart_summary">Start the server automatically on boot</string>
+    <string name="prefs_port_default">2222</string>
+    <string name="error_port">Ports below 1024 are not allowed to be bound (Android limitation).</string>
 </resources>

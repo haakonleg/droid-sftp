@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
         <item name="actionBarStyle">@style/ActionBarFlat</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
     <style name="ActionBarFlat" parent="Widget.AppCompat.Light.ActionBar.Solid">

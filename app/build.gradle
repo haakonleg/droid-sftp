@@ -45,6 +45,7 @@ dependencies {
     implementation 'com.android.support:cardview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:preference-v7:27.1.1'
     // sshd
     implementation 'org.apache.sshd:sshd-core:2.0.0'
     implementation 'org.apache.sshd:sshd-sftp:2.0.0'
