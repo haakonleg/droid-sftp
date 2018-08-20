@@ -17,6 +17,14 @@ class PathsRecyclerAdapter(private val listener: OnPathEditListener, private val
         notifyItemInserted(paths.size-1)
     }
 
+    fun removeItem(path: StoredPath) {
+        val i = paths.indexOf(path)
+        if (i != -1) {
+            paths.removeAt(i)
+            notifyItemRemoved(i)
+        }
+    }
+
     fun itemUpdated(orig: StoredPath, newPath: StoredPath) {
         val i = paths.indexOf(orig)
         if (i != -1 ){

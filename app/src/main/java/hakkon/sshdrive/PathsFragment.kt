@@ -26,10 +26,13 @@ class PathsFragment : Fragment(), PathsRecyclerAdapter.OnPathEditListener {
     }
 
     override fun onPathEdit(path: StoredPath) {
-        val editFragment = EditPathDialogFragment.newInstance(path, false) {newPath ->
+        val editFragment = EditPathDialogFragment.newInstance(path, false, {newPath ->
             PathsManager.get(ctx).pathUpdated(path, newPath, ctx)
             adapter.itemUpdated(path, newPath)
-        }
+        }, {deletedPath ->
+            PathsManager.get(ctx).removePath(path, ctx)
+            adapter.removeItem(path)
+        })
         editFragment.show(fragmentManager, "dialog")
     }
 
@@ -38,10 +41,10 @@ class PathsFragment : Fragment(), PathsRecyclerAdapter.OnPathEditListener {
     }
 
     private fun newPath() {
-        val editFragment = EditPathDialogFragment.newInstance(StoredPath(), true) {newPath ->
+        val editFragment = EditPathDialogFragment.newInstance(StoredPath(), true, {newPath ->
             PathsManager.get(ctx).addPath(newPath, ctx)
             adapter.addItem(newPath)
-        }
+        }, null)
         editFragment.show(fragmentManager, "dialog")
     }
 }

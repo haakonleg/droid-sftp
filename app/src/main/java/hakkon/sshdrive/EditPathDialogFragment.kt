@@ -3,6 +3,7 @@ package hakkon.sshdrive
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -12,12 +13,14 @@ import hakkon.sshdrive.directorypicker.DirectoryPickerActivity
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
 
 typealias OnEditFinished = (path: StoredPath) -> Unit
+typealias OnPathDeleted = (path: StoredPath) -> Unit
 
 class EditPathDialogFragment : DialogFragment() {
     companion object {
-        fun newInstance(path: StoredPath, isNew: Boolean, listener: OnEditFinished): EditPathDialogFragment {
+        fun newInstance(path: StoredPath, isNew: Boolean, editListener: OnEditFinished, deleteListener: OnPathDeleted?): EditPathDialogFragment {
             val fragment = EditPathDialogFragment()
-            fragment.listener = listener
+            fragment.editListener = editListener
+            fragment.deleteListener = deleteListener
 
             val bundle = Bundle()
             bundle.putParcelable("path", path)
@@ -28,7 +31,8 @@ class EditPathDialogFragment : DialogFragment() {
         }
     }
 
-    private lateinit var listener: OnEditFinished
+    private lateinit var editListener: OnEditFinished
+    private var deleteListener: OnPathDeleted? = null
     private lateinit var path: StoredPath
     private var isNew = false
     private lateinit var ctx: Context
@@ -47,8 +51,6 @@ class EditPathDialogFragment : DialogFragment() {
 
         val builder = AlertDialog.Builder(activity)
                 .setTitle(if (isNew) "New Path" else "Editing ${path.name}")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Apply") {_, _ ->  finishedEdit()}
                 .setView(layout)
 
         return builder.create()
@@ -61,6 +63,19 @@ class EditPathDialogFragment : DialogFragment() {
         layout.inputPassword.editText!!.setText(path.password)
 
         // Set buttons onclick
+        if (!isNew) {
+            layout.btnDelete.visibility = View.VISIBLE
+            layout.btnDelete.setOnClickListener {
+                Util.showYesNoDialog(ctx, "Are you sure?", "Are you sure you want to delete this path?", DialogInterface.OnClickListener { _, _ ->
+                    deleteListener?.invoke(path)
+                    dismiss()
+                })
+            }
+        }
+
+        layout.btnCancel.setOnClickListener { dismiss() }
+        layout.btnApply.setOnClickListener { finishedEdit() }
+
         layout.btnBrowse.setOnClickListener {
             val intent = Intent(ctx, DirectoryPickerActivity::class.java)
             startActivityForResult(intent, DirectoryPickerActivity.REQUEST_DIR)
@@ -83,7 +98,8 @@ class EditPathDialogFragment : DialogFragment() {
 
         val password = layout.inputPassword.editText!!.text.toString()
 
-        listener(StoredPath(username, name, path, password))
+        editListener(StoredPath(username, name, path, password))
+        dismiss()
     }
 
     // For directory picker

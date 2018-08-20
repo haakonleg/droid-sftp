@@ -82,4 +82,9 @@ class PathsManager private constructor() {
         paths.add(path)
         save(context)
     }
+
+    fun removePath(path: StoredPath, context: Context) {
+        paths.remove(path)
+        save(context)
+    }
 }

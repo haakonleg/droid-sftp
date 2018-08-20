@@ -40,7 +40,7 @@ object Util {
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("Yes", cb)
-                .setNegativeButton("No", cb)
+                .setNegativeButton("No", null)
                 .create()
         dialog.show()
     }
