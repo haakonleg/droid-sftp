@@ -12,4 +12,6 @@
     <string name="prefs_autostart_summary">Start the server automatically on boot</string>
     <string name="prefs_port_default">2222</string>
     <string name="error_port">Ports below 1024 are not allowed to be bound (Android limitation).</string>
+    <string name="error_3_chars">Minimum 3 characters or longer</string>
+    <string name="error_invalid_path">This path is invalid</string>
 </resources>

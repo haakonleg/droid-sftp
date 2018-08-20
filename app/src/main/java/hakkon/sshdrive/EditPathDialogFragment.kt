@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import hakkon.sshdrive.directorypicker.DirectoryPickerActivity
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
+import java.io.File
 
 typealias OnEditFinished = (path: StoredPath) -> Unit
 typealias OnPathDeleted = (path: StoredPath) -> Unit
@@ -91,12 +92,40 @@ class EditPathDialogFragment : DialogFragment() {
         }
     }
 
+    private fun validate(username: String, name: String, password: String, path: String): Boolean {
+        var error = false
+        if (username.length < 3 ) {
+            layout.inputUsername.error = getString(R.string.error_3_chars)
+            error = true
+        } else layout.inputUsername.isErrorEnabled = false
+
+        if (name.length < 3) {
+            layout.inputLabel.error = getString(R.string.error_3_chars)
+            error = true
+        } else layout.inputLabel.isErrorEnabled = false
+
+        if (password.length < 3) {
+            layout.inputPassword.error = getString(R.string.error_3_chars)
+            error = true
+        } else layout.inputPassword.isErrorEnabled = false
+
+        if (path.isEmpty()) {
+            layout.txtPath.error = getString(R.string.error_invalid_path)
+            layout.txtPath.requestFocus()
+            error = true
+        } else layout.txtPath.error = null
+
+        if (error) return false
+        return true
+    }
+
     private fun finishedEdit() {
         val username = layout.inputUsername.editText!!.text.toString()
         val name = layout.inputLabel.editText!!.text.toString()
         val path = layout.txtPath.text.toString()
-
         val password = layout.inputPassword.editText!!.text.toString()
+
+        if (!validate(username, name, password, path)) return
 
         editListener(StoredPath(username, name, path, password))
         dismiss()

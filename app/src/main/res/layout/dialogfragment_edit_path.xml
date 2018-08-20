@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:hint="Label"
             android:inputType="text"
-            android:maxLength="20" />
+            android:maxLength="30" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -61,6 +61,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/border"
         android:padding="5dp"
+        android:lines="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
         android:text="/storage/emulated/0" />
 
     <LinearLayout
