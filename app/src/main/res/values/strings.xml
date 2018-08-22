@@ -42,4 +42,5 @@
     <string name="start">Start</string>
     <string name="server_stopped">Server is stopped</string>
     <string name="about">About</string>
+    <string name="about_html"><![CDATA[<b>SFTP Server 0.1</b><br>Apache License 2.0<br><br><b>Libraries</b><br>Android Support Libraries<br>Apache MINA SSHD<br>Google GSON<br>SLF4J]]></string>
 </resources>

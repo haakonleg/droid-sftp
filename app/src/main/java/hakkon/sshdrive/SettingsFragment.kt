@@ -1,10 +1,12 @@
 package hakkon.sshdrive
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v7.preference.PreferenceFragmentCompat
+import android.text.Html
 import android.view.View
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -21,6 +23,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 Util.showAlertDialog(activity as Context, getString(R.string.error_port))
                 false
             }
+        }
+
+        val about = findPreference("about")
+        about.setOnPreferenceClickListener {
+            val dialog = AlertDialog.Builder(this.context)
+                    .setTitle("About")
+                    .setMessage(Html.fromHtml(getString(R.string.about_html), Html.FROM_HTML_MODE_LEGACY))
+                    .setPositiveButton("OK", null)
+            dialog.show()
+            true
         }
     }
 
