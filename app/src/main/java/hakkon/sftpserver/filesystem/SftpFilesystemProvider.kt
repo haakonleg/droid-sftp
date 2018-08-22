@@ -50,7 +50,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
             if (filesystems.containsKey(path)) {
                 throw FileSystemAlreadyExistsException("$path already mapped")
             }
-            val fs = SftpFilesystem(this, contentResolverUri, path, env)
+            val fs = SftpFilesystem(this, contentResolverUri, path)
             filesystems[path] = fs
 
             Log.e(this::class.simpleName, "Created filesystem $path")
@@ -71,7 +71,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
             val file = resolveContentResolverUri(cr, path)
-            return contentResolver.openInputStream(file)
+            return contentResolver.openInputStream(file) as InputStream
         }
 
         val r = realPath(path)
@@ -217,7 +217,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
             val file = resolveContentResolverUri(cr, path)
-            return contentResolver.openOutputStream(file)
+            return contentResolver.openOutputStream(file) as OutputStream
         }
 
         val r = realPath(path)
@@ -297,7 +297,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
             // Open for write
             if (options.contains(StandardOpenOption.WRITE)) {
                 val fd = if (options.contains(StandardOpenOption.APPEND))
-                    contentResolver.openFileDescriptor(file, "wa") else contentResolver.openFileDescriptor(file, "w")
+                    contentResolver.openFileDescriptor(file, "wa") else contentResolver.openFileDescriptor(file, "w") as ParcelFileDescriptor
 
                 channel = autoCloseFd.autoCloseOut(fd)
 
@@ -305,7 +305,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
 
             // Open for read
             } else if (options.contains(StandardOpenOption.READ)) {
-                val fd = contentResolver.openFileDescriptor(file, "r")
+                val fd = contentResolver.openFileDescriptor(file, "r") as ParcelFileDescriptor
                 channel = autoCloseFd.autoCloseIn(fd)
             }
 

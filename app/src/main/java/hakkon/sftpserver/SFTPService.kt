@@ -122,11 +122,11 @@ class SFTPService : Service() {
         System.setProperty("user.home", appdir.absolutePath)
 
         val sftpServer = SshServer.setUpDefaultServer()
-        sftpServer.port = prefs.getString("server_port", getString(R.string.prefs_port_default)).toInt()
+        sftpServer.port = prefs.getString("server_port", getString(R.string.prefs_port_default))!!.toInt()
         sftpServer.keyPairProvider = SimpleGeneratorHostKeyProvider(File(appdir, "hostkey"))
 
         // Password authentication
-        sftpServer.passwordAuthenticator = PasswordAuthenticator { username, password, session ->
+        sftpServer.passwordAuthenticator = PasswordAuthenticator { username, password, _ ->
             val path = PathsManager.get(this).getPathByUsername(username)
             if (path != null)
                 password == path.password

@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.*
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v4.app.Fragment
@@ -100,7 +101,7 @@ class StatusFragment : Fragment(), ServiceConnection {
             return
         }
 
-        val treeUri = data.data
+        val treeUri = data.data as Uri
         ctx.applicationContext.grantUriPermission(ctx.packageName, treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         ctx.applicationContext.contentResolver.takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 

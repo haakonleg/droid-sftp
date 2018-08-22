@@ -29,7 +29,7 @@ class PathsFragment : Fragment(), PathsRecyclerAdapter.OnPathEditListener {
         val editFragment = EditPathDialogFragment.newInstance(path, false, {newPath ->
             PathsManager.get(ctx).pathUpdated(path, newPath, ctx)
             adapter.itemUpdated(path, newPath)
-        }, {deletedPath ->
+        }, {_ -> // Deleted item
             PathsManager.get(ctx).removePath(path, ctx)
             adapter.removeItem(path)
         })

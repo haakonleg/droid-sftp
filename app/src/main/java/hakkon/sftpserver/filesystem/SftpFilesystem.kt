@@ -7,7 +7,7 @@ import java.nio.file.FileStore
 import java.nio.file.Path
 import java.nio.file.attribute.UserPrincipalLookupService
 
-class SftpFilesystem(fileSystemProvider: SftpFilesystemProvider, private val contentResolverUri: Uri?, private val root: Path, env: Map<String, *>) : BaseFileSystem<SftpPath>(fileSystemProvider) {
+class SftpFilesystem(fileSystemProvider: SftpFilesystemProvider, private val contentResolverUri: Uri?, private val root: Path) : BaseFileSystem<SftpPath>(fileSystemProvider) {
 
     private val localFilesystem = root.fileSystem
 

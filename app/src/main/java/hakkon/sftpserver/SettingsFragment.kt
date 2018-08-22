@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.text.Html
 import android.view.View
+import kotlinx.android.synthetic.main.preference_recyclerview.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -16,7 +17,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
         val serverPort = findPreference("server_port")
-        serverPort.setOnPreferenceChangeListener { preference, newValue ->
+        serverPort.setOnPreferenceChangeListener { _, newValue ->
             val port = (newValue as String).toInt()
             if (port >= 1024) true
             else {

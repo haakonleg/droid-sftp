@@ -58,7 +58,7 @@ object Util {
     fun getPathUUID(context: Context, path: String): String {
         val sm = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
         val volume = sm.getStorageVolume(File(path))
-        return if (volume != null && volume.uuid != null) volume.uuid else ""
+        return if (volume != null && volume.uuid != null) volume.uuid as String else ""
     }
 
     fun getInternalStoragePath(context: Context): String? {

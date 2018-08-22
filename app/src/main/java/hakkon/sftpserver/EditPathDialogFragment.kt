@@ -41,7 +41,7 @@ class EditPathDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ctx = activity as Context
-        path = arguments!!.getParcelable("path")
+        path = arguments!!.getParcelable("path") as StoredPath
         isNew = arguments!!.getBoolean("isNew")
     }
 
