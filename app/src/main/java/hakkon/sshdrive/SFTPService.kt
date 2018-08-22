@@ -25,8 +25,8 @@ class SFTPService : Service() {
     }
 
     companion object {
-        private val CHANNEL_ID = "SFTPSERVER"
-        private val CHANNEL_NAME = "Sftp Server"
+        private const val CHANNEL_ID = "SFTPSERVER"
+        private const val CHANNEL_NAME = "Sftp Server"
 
         // Binds to SFTPService
         fun bindService(context: Context, connection: ServiceConnection): Boolean {
@@ -118,12 +118,12 @@ class SFTPService : Service() {
 
 
     private fun initSFTPServer(): SshServer {
-        val APPDIR = filesDir
-        System.setProperty("user.home", APPDIR.absolutePath)
+        val appdir = filesDir
+        System.setProperty("user.home", appdir.absolutePath)
 
         val sftpServer = SshServer.setUpDefaultServer()
         sftpServer.port = prefs.getString("server_port", getString(R.string.prefs_port_default)).toInt()
-        sftpServer.keyPairProvider = SimpleGeneratorHostKeyProvider(File(APPDIR, "hostkey"))
+        sftpServer.keyPairProvider = SimpleGeneratorHostKeyProvider(File(appdir, "hostkey"))
 
         // Password authentication
         sftpServer.passwordAuthenticator = PasswordAuthenticator { username, password, session ->

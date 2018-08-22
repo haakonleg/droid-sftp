@@ -19,7 +19,7 @@ class PathsFragment : Fragment(), PathsRecyclerAdapter.OnPathEditListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_paths, container, false)
-        adapter = PathsRecyclerAdapter(this, PathsManager.get(ctx).getPaths().toMutableList())
+        adapter = PathsRecyclerAdapter(this, PathsManager.get(ctx).getPaths().toMutableList(), ctx)
         view.pathsRecycler.adapter = adapter
         view.btnAdd.setOnClickListener { newPath() }
         return view

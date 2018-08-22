@@ -63,7 +63,7 @@ object Util {
 
     fun getInternalStoragePath(context: Context): String? {
         val dirs = context.getExternalFilesDirs(null)
-        if (dirs.size > 0 && Environment.getExternalStorageState(dirs[0]) == Environment.MEDIA_MOUNTED) {
+        if (dirs.isNotEmpty() && Environment.getExternalStorageState(dirs[0]) == Environment.MEDIA_MOUNTED) {
             val i = dirs[0].absolutePath.indexOf("/Android/data")
             return dirs[0].absolutePath.substring(0, i)
         }

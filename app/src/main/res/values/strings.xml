@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SSHDrive</string>
+    <string name="app_name">SFTP Server</string>
     <string name="btnStart">Start</string>
     <string name="permissions_external_desc">Select to grant permissions to read and write to external storage. This is needed if you want to be able to read/write to the internal storage and read SD card.</string>
     <string name="permissions_external_title">External Storage Read/Write Permission</string>
@@ -14,4 +14,31 @@
     <string name="error_port">Ports below 1024 are not allowed to be bound (Android limitation).</string>
     <string name="error_3_chars">Minimum 3 characters or longer</string>
     <string name="error_invalid_path">This path is invalid</string>
+    <string name="btnupwards_desc">Go one directory up</string>
+    <string name="btnedit_desc">Edit path</string>
+    <string name="tab_paths">Paths</string>
+    <string name="tab_settings">Settings</string>
+    <string name="directory_picker_current">Current Directory</string>
+    <string name="cancel">Cancel</string>
+    <string name="select">Select</string>
+    <string name="label">Label</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="path">Path</string>
+    <string name="browse">Browse....</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="sd_card">SD Card</string>
+    <string name="delete">Delete</string>
+    <string name="apply">Apply</string>
+    <string name="server_not_running">Server is not running</string>
+    <string name="status">Status</string>
+    <string name="not_running">Not running</string>
+    <string name="ungranted_permissions">Ungranted Permissions</string>
+    <string name="enabled">Enabled</string>
+    <string name="authentication">Authentication</string>
+    <string name="all_premissions_granted">All permissions granted</string>
+    <string name="stop">Stop</string>
+    <string name="server_running">Server is running</string>
+    <string name="start">Start</string>
+    <string name="server_stopped">Server is stopped</string>
 </resources>

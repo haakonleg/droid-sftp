@@ -51,7 +51,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
                 throw FileSystemAlreadyExistsException("$path already mapped")
             }
             val fs = SftpFilesystem(this, contentResolverUri, path, env)
-            filesystems.put(path, fs)
+            filesystems[path] = fs
 
             Log.e(this::class.simpleName, "Created filesystem $path")
             fs
@@ -65,7 +65,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun newInputStream(path: Path, vararg options: OpenOption): InputStream {
-        Log.e(this::class.simpleName, "newInputStream ${path}")
+        Log.e(this::class.simpleName, "newInputStream $path")
 
         // If using contentresolver
         val cr = (path as SftpPath).getContentResolverUri()
@@ -120,20 +120,20 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun isHidden(path: Path): Boolean {
-        Log.e(this::class.simpleName, "isHidden ${path}")
+        Log.e(this::class.simpleName, "isHidden $path")
         val r = realPath(path)
         val p = r.fileSystem.provider()
         return p.isHidden(r)
     }
 
     override fun newDirectoryStream(dir: Path, filter: DirectoryStream.Filter<in Path>): DirectoryStream<Path> {
-        Log.e(this::class.simpleName, "newDirectoryStream ${dir}")
+        Log.e(this::class.simpleName, "newDirectoryStream $dir")
         val r = realPath(dir)
         val p = r.fileSystem.provider()
         return root((dir as SftpPath).fileSystem, p.newDirectoryStream(r, filter))
     }
 
-    protected fun root(sfs: SftpFilesystem, ds: DirectoryStream<Path>): DirectoryStream<Path> {
+    private fun root(sfs: SftpFilesystem, ds: DirectoryStream<Path>): DirectoryStream<Path> {
         return object : DirectoryStream<Path> {
             override fun iterator(): MutableIterator<Path> {
                 return root(sfs, ds.iterator())
@@ -145,7 +145,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         }
     }
 
-    protected fun root(sfs: SftpFilesystem, iter: Iterator<Path>): MutableIterator<Path> {
+    private fun root(sfs: SftpFilesystem, iter: Iterator<Path>): MutableIterator<Path> {
         return object : MutableIterator<Path> {
             override fun hasNext(): Boolean {
                 return iter.hasNext()
@@ -161,7 +161,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         }
     }
 
-    protected fun root(sfs: SftpFilesystem, nat: Path): Path {
+    private fun root(sfs: SftpFilesystem, nat: Path): Path {
         if (nat.isAbsolute) {
             val root = sfs.getRoot()
             val rel = root.relativize(nat)
@@ -175,7 +175,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun delete(path: Path) {
-        Log.e(this::class.simpleName, "delete ${path}")
+        Log.e(this::class.simpleName, "delete $path")
 
         // If using contentresolver
         val cr = (path as SftpPath).getContentResolverUri()
@@ -211,7 +211,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun newOutputStream(path: Path, vararg options: OpenOption): OutputStream {
-        Log.e(this::class.simpleName, "newInputStream ${path}")
+        Log.e(this::class.simpleName, "newInputStream $path")
 
         // If using contentresolver
         val cr = (path as SftpPath).getContentResolverUri()
@@ -229,7 +229,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         return getFileSystem(Paths.get(uri.toString()))
     }
 
-    protected fun getFileSystem(path: Path): SftpFilesystem {
+    private fun getFileSystem(path: Path): SftpFilesystem {
         val r = realPath(path)
 
         return synchronized(filesystems) {
@@ -280,7 +280,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     }
 
     override fun newFileChannel(path: Path, options: MutableSet<out OpenOption>, vararg attrs: FileAttribute<*>): FileChannel {
-        Log.e(this::class.simpleName, "newFileChannel ${path} ${options.toList()}")
+        Log.e(this::class.simpleName, "newFileChannel $path ${options.toList()}")
         // If using contentresolver
         val cr = (path as SftpPath).getContentResolverUri()
         if (cr != null) {
@@ -317,13 +317,8 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         return p.newFileChannel(r, options, *attrs)
     }
 
-    private fun openFileDescriptors(): Int {
-        val dir = File("/proc/self/fd")
-        return dir.listFiles().size
-    }
-
     override fun getFileStore(path: Path): FileStore {
-        Log.e(this::class.simpleName, "getFileStore ${path}")
+        Log.e(this::class.simpleName, "getFileStore $path")
         val root = getFileSystem(path).getRoot()
         return Files.getFileStore(root)
     }
@@ -380,13 +375,13 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
             return fromCache
         }
 
-        var resolved: DocumentFile = DocumentFile.fromTreeUri(ctx, root)
+        var resolved: DocumentFile? = DocumentFile.fromTreeUri(ctx, root)
         for(i in 0 until path.nameCount) {
-            resolved = resolved.findFile(path.getName(i).toString())
+            resolved = resolved!!.findFile(path.getName(i).toString())
         }
 
-        val resolvedUri = resolved.uri
-        contentResolverUriCache.put(path, resolvedUri)
+        val resolvedUri = resolved!!.uri
+        contentResolverUriCache[path] = resolvedUri
         return resolvedUri
     }
 
@@ -402,7 +397,7 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         return root.resolve(subPath).normalize().toAbsolutePath()
     }
 
-    protected fun ensureDirectory(path: Path): Path {
+    private fun ensureDirectory(path: Path): Path {
         val attrs = Files.readAttributes(path, BasicFileAttributes::class.java)
         if (!attrs.isDirectory) {
             throw UnsupportedOperationException("$path is not a directory")

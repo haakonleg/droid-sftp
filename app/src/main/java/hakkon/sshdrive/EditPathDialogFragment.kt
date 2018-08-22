@@ -11,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import hakkon.sshdrive.directorypicker.DirectoryPickerActivity
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
-import java.io.File
 
 typealias OnEditFinished = (path: StoredPath) -> Unit
 typealias OnPathDeleted = (path: StoredPath) -> Unit

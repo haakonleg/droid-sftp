@@ -15,6 +15,7 @@
         android:background="?android:attr/selectableItemBackground"
         android:scaleType="fitCenter"
         android:layout_margin="5dp"
+        android:contentDescription="@string/btnupwards_desc"
         app:srcCompat="@drawable/ic_arrow_upward_24dp" />
 
     <TextView
@@ -24,7 +25,7 @@
         android:layout_marginStart="10dp"
         android:layout_toEndOf="@id/btnUpwards"
         android:layout_alignTop="@id/btnUpwards"
-        android:text="Current Directory"
+        android:text="@string/directory_picker_current"
         android:textStyle="bold" />
 
     <TextView
@@ -32,8 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@id/labelCurrent"
-        android:layout_below="@id/labelCurrent"
-        android:text="/" />
+        android:layout_below="@id/labelCurrent" />
 
     <View
         android:id="@+id/separator1"
@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancel" />
+            android:text="@string/cancel" />
         
         <View
             android:layout_width="1dp"
@@ -87,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Select" />
+            android:text="@string/select" />
 
     </LinearLayout>
 

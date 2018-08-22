@@ -1,12 +1,13 @@
 package hakkon.sshdrive
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.view_path.view.*
 
-class PathsRecyclerAdapter(private val listener: OnPathEditListener, private val paths: MutableList<StoredPath>) : RecyclerView.Adapter<PathsRecyclerAdapter.ViewHolder>() {
+class PathsRecyclerAdapter(private val listener: OnPathEditListener, private val paths: MutableList<StoredPath>, private val context: Context) : RecyclerView.Adapter<PathsRecyclerAdapter.ViewHolder>() {
     interface OnPathEditListener {
         fun onPathEdit(path: StoredPath)
         fun onPathEnabled(path: StoredPath, enabled: Boolean)
@@ -52,7 +53,7 @@ class PathsRecyclerAdapter(private val listener: OnPathEditListener, private val
             itemView.txtName.text = path.name
             itemView.switchEnable.isChecked = path.enabled
             itemView.txtUsername.text = path.username
-            itemView.txtAuth.text = "Password"
+            itemView.txtAuth.text = context.getString(R.string.password)
             itemView.txtPath.text = path.path
 
             // Enabled switch listener

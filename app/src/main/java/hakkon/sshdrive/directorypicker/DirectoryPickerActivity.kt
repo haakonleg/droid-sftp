@@ -7,9 +7,10 @@ import kotlinx.android.synthetic.main.activity_directory_picker.*
 
 class DirectoryPickerActivity : AppCompatActivity() {
     companion object {
-        val REQUEST_DIR = 100
-        val RESULT_DIR = "RESULT_DIR"
-        val RESULT_CODE_SELECTED = 101
+        const val INITIAL_DIR = "/"
+        const val REQUEST_DIR = 100
+        const val RESULT_DIR = "RESULT_DIR"
+        const val RESULT_CODE_SELECTED = 101
     }
 
     private lateinit var adapter: DirectoriesRecyclerAdapter
@@ -18,7 +19,9 @@ class DirectoryPickerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_directory_picker)
 
-        adapter = DirectoriesRecyclerAdapter("/") {dir -> txtCurrentDir.text = dir }
+        txtCurrentDir.text = INITIAL_DIR
+
+        adapter = DirectoriesRecyclerAdapter(INITIAL_DIR) { dir -> txtCurrentDir.text = dir }
         directoriesRecycler.adapter = adapter
 
         // Buttons

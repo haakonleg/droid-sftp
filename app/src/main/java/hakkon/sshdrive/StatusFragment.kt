@@ -42,7 +42,7 @@ class StatusFragment : Fragment(), ServiceConnection {
         if (layoutPermissions.childCount == 1) {
             createPermissionList()
             if (layoutPermissions.childCount == 1)
-                permissionsStatus.text = "All permissions granted"
+                permissionsStatus.text = getString(R.string.all_premissions_granted)
         }
 
         // Bind to service
@@ -121,7 +121,7 @@ class StatusFragment : Fragment(), ServiceConnection {
     }
 
     // Start service
-    fun onStartClicked() {
+    private fun onStartClicked() {
         if (!isBound) {
             SFTPService.bindService(ctx, this)
             SFTPService.startService(ctx)
@@ -132,8 +132,8 @@ class StatusFragment : Fragment(), ServiceConnection {
 
     private fun setRunningStatus() {
         // Set button and status
-        btnStartStop.text = "Stop"
-        txtServerStatus.text = "Server is running"
+        btnStartStop.text = getString(R.string.stop)
+        txtServerStatus.text = getString(R.string.server_running)
 
         // Set status text
         val port = sftpService!!.getPort()
@@ -151,7 +151,7 @@ class StatusFragment : Fragment(), ServiceConnection {
         } else {
             for (path in paths) {
                 if (path.enabled)
-                    sb.append("${path.path} accessible on ${path.username}@${ip}\n")
+                    sb.append("${path.path} accessible on ${path.username}@$ip\n")
             }
         }
 
@@ -160,9 +160,9 @@ class StatusFragment : Fragment(), ServiceConnection {
 
     private fun setStoppedStatus() {
         // Set button and status
-        btnStartStop.text = "Start"
-        txtServerStatus.text = "Server is stopped"
-        txtStatus.text = "Not running"
+        btnStartStop.text = getString(R.string.start)
+        txtServerStatus.text = getString(R.string.server_stopped)
+        txtStatus.text = getString(R.string.not_running)
     }
 
     override fun onServiceConnected(className: ComponentName, service: IBinder) {

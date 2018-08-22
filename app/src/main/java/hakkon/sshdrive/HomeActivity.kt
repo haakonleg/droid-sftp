@@ -47,11 +47,11 @@ class HomeActivity : AppCompatActivity(), TabLayout.OnTabSelectedListener {
         }
 
         override fun getItem(position: Int): Fragment? {
-            when (position) {
-                FRAGMENTS.STATUS_FRAGMENT.value -> return StatusFragment()
-                FRAGMENTS.PATHS_FRAGMENT.value -> return PathsFragment()
-                FRAGMENTS.SETTINGS_FRAGMENT.value -> return SettingsFragment()
-                else -> return StatusFragment()
+            return when (position) {
+                FRAGMENTS.STATUS_FRAGMENT.value -> StatusFragment()
+                FRAGMENTS.PATHS_FRAGMENT.value -> PathsFragment()
+                FRAGMENTS.SETTINGS_FRAGMENT.value -> SettingsFragment()
+                else -> StatusFragment()
             }
         }
 

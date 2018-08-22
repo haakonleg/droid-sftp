@@ -14,7 +14,7 @@
         <android.support.design.widget.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Label"
+            android:hint="@string/label"
             android:inputType="text"
             android:maxLength="30" />
     </android.support.design.widget.TextInputLayout>
@@ -28,7 +28,7 @@
         <android.support.design.widget.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username"
+            android:hint="@string/username"
             android:inputType="text"
             android:maxLength="20" />
     </android.support.design.widget.TextInputLayout>
@@ -43,7 +43,7 @@
         <android.support.design.widget.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:maxLength="30" />
     </android.support.design.widget.TextInputLayout>
@@ -52,7 +52,7 @@
         android:id="@+id/labelPath"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Path"
+        android:text="@string/path"
         android:textSize="12sp" />
 
     <TextView
@@ -64,8 +64,7 @@
         android:lines="1"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:clickable="true"
-        android:text="/storage/emulated/0" />
+        android:clickable="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -76,14 +75,14 @@
             android:id="@+id/btnBrowse"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:text="Browse...."
+            android:text="@string/browse"
             android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnInternalStorage"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:text="Internal Storage"
+            android:text="@string/internal_storage"
             android:textSize="12sp"
             android:visibility="gone" />
 
@@ -91,7 +90,7 @@
             android:id="@+id/btnSDCard"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="SD Card"
+            android:text="@string/sd_card"
             android:textSize="12sp"
             android:visibility="gone" />
     </LinearLayout>
@@ -108,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
-            android:text="Delete"
+            android:text="@string/delete"
             android:visibility="gone"
             style="?android:attr/buttonBarButtonStyle"/>
 
@@ -122,7 +121,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Cancel"
+            android:text="@string/cancel"
             style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
@@ -130,7 +129,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Apply"
+            android:text="@string/apply"
             style="?android:attr/buttonBarButtonStyle"/>
 
     </LinearLayout>

@@ -12,7 +12,7 @@ import java.nio.file.Paths
 
 typealias onDirectoryChanged = (dir: String) -> Unit
 
-class DirectoriesRecyclerAdapter(private val initialDir: String, private val onDirectoryChanged: onDirectoryChanged) : RecyclerView.Adapter<DirectoriesRecyclerAdapter.ViewHolder>() {
+class DirectoriesRecyclerAdapter(initialDir: String, private val onDirectoryChanged: onDirectoryChanged) : RecyclerView.Adapter<DirectoriesRecyclerAdapter.ViewHolder>() {
     private val dirStack = Stack<String>()
     private var directoryListing: List<String>
 
