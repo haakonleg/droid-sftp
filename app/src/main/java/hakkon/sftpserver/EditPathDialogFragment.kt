@@ -1,4 +1,4 @@
-package hakkon.sshdrive
+package hakkon.sftpserver
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
-import hakkon.sshdrive.directorypicker.DirectoryPickerActivity
+import hakkon.sftpserver.directorypicker.DirectoryPickerActivity
 import kotlinx.android.synthetic.main.dialogfragment_edit_path.view.*
 
 typealias OnEditFinished = (path: StoredPath) -> Unit

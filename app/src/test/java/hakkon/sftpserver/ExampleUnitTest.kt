@@ -1,4 +1,4 @@
-package hakkon.sshdrive
+package hakkon.sftpserver
 
 import org.junit.Test
 

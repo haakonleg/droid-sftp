@@ -1,4 +1,4 @@
-package hakkon.sshdrive.filesystem
+package hakkon.sftpserver.filesystem
 
 import android.net.Uri
 import android.util.Log

@@ -1,4 +1,4 @@
-package hakkon.sshdrive
+package hakkon.sftpserver
 
 import android.content.Context
 import android.os.Bundle

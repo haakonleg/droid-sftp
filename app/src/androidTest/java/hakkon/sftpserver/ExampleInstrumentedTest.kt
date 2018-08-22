@@ -1,4 +1,4 @@
-package hakkon.sshdrive
+package hakkon.sftpserver
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

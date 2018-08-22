@@ -1,4 +1,4 @@
-package hakkon.sshdrive.filesystem
+package hakkon.sftpserver.filesystem
 
 import android.content.Context
 import android.net.Uri
@@ -6,7 +6,7 @@ import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.support.v4.provider.DocumentFile
 import android.util.Log
-import hakkon.sshdrive.Util
+import hakkon.sftpserver.Util
 import java.io.*
 import java.net.URI
 import java.nio.channels.AsynchronousFileChannel

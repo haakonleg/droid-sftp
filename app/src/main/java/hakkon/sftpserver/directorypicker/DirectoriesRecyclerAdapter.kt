@@ -1,10 +1,10 @@
-package hakkon.sshdrive.directorypicker
+package hakkon.sftpserver.directorypicker
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import hakkon.sshdrive.R
+import hakkon.sftpserver.R
 import java.io.File
 import java.util.*
 import kotlinx.android.synthetic.main.directory_picker_directory.view.*

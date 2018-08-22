@@ -1,8 +1,8 @@
-package hakkon.sshdrive.directorypicker
+package hakkon.sftpserver.directorypicker
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import hakkon.sshdrive.R
+import hakkon.sftpserver.R
 import kotlinx.android.synthetic.main.activity_directory_picker.*
 
 class DirectoryPickerActivity : AppCompatActivity() {

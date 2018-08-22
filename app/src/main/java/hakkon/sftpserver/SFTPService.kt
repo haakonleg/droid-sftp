@@ -1,4 +1,4 @@
-package hakkon.sshdrive
+package hakkon.sftpserver
 
 import android.app.*
 import android.content.Context
@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.util.Log
-import hakkon.sshdrive.filesystem.SftpFilesystemProvider
+import hakkon.sftpserver.filesystem.SftpFilesystemProvider
 import org.apache.sshd.common.file.FileSystemFactory
 import org.apache.sshd.server.SshServer
 import org.apache.sshd.server.auth.password.PasswordAuthenticator

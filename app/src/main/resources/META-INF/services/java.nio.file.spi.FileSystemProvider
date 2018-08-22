@@ -1,1 +1,1 @@
-hakkon.sshdrive.filesystem.SftpFilesystemProvider
+hakkon.sftpserver.filesystem.SftpFilesystemProvider
