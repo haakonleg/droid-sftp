@@ -58,6 +58,10 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
         }
     }
 
+    fun removeFilesystem(path: Path) {
+        filesystems.remove(path)
+    }
+
     override fun checkAccess(path: Path, vararg modes: AccessMode) {
         val r = realPath(path)
         val p = r.fileSystem.provider()

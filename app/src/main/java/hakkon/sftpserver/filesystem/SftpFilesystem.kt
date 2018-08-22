@@ -7,7 +7,7 @@ import java.nio.file.FileStore
 import java.nio.file.Path
 import java.nio.file.attribute.UserPrincipalLookupService
 
-class SftpFilesystem(fileSystemProvider: SftpFilesystemProvider, private val contentResolverUri: Uri?, private val root: Path) : BaseFileSystem<SftpPath>(fileSystemProvider) {
+class SftpFilesystem(private val fileSystemProvider: SftpFilesystemProvider, private val contentResolverUri: Uri?, private val root: Path) : BaseFileSystem<SftpPath>(fileSystemProvider) {
 
     private val localFilesystem = root.fileSystem
 
@@ -40,6 +40,7 @@ class SftpFilesystem(fileSystemProvider: SftpFilesystemProvider, private val con
     }
 
     override fun close() {
+        fileSystemProvider.removeFilesystem(root)
         Log.e(this::class.simpleName, "Close")
     }
 }
