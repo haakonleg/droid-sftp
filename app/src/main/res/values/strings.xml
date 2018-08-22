@@ -41,4 +41,5 @@
     <string name="server_running">Server is running</string>
     <string name="start">Start</string>
     <string name="server_stopped">Server is stopped</string>
+    <string name="about">About</string>
 </resources>

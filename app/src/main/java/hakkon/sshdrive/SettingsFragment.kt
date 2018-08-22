@@ -1,8 +1,11 @@
 package hakkon.sshdrive
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v7.preference.PreferenceFragmentCompat
+import android.view.View
 
 class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -19,5 +22,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 false
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setDivider(ColorDrawable(Color.TRANSPARENT))
+        setDividerHeight(0)
     }
 }
