@@ -85,7 +85,7 @@ class SFTPService : Service() {
     private fun createNotification(): Notification {
         // Notification channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW)
             val nManager = getSystemService(NotificationManager::class.java)
             nManager.createNotificationChannel(channel)
         }
