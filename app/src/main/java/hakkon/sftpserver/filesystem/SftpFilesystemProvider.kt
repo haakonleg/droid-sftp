@@ -35,6 +35,10 @@ class SftpFilesystemProvider(context: Context) : FileSystemProvider() {
     override fun newFileSystem(uri: URI, env: Map<String, *>): FileSystem {
         val path = ensureDirectory(Paths.get(uri.toString()).toAbsolutePath())
 
+        // Already exists?
+        if (filesystems[path] != null)
+            return filesystems[path] as SftpFilesystem
+
         // Check if this is SD card path
         var contentResolverUri: Uri? = null
         val prefs = Util.getPrefs(ctx)
